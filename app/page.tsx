@@ -12,41 +12,51 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative bg-primary/5 overflow-hidden">
-        <div className="container mx-auto px-4 py-16 md:py-24">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium">
-                Quality Since 2010
-              </span>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight text-balance">
-                Grow Your Garden with the Right Tools
-              </h1>
-              <p className="text-lg text-muted-foreground max-w-lg text-pretty">
-                Discover our curated collection of premium gardening tools
-                designed for both professionals and home gardeners. Quality
-                craftsmanship meets modern design.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Button size="lg" asChild>
-                  <Link href="/shop">
-                    Shop Now
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <Link href="/categories">Browse Categories</Link>
-                </Button>
-              </div>
-            </div>
-            <div className="relative aspect-square lg:aspect-auto lg:h-[500px]">
-              <Image
-                src="/images/hero-garden.jpg"
-                alt="Beautiful garden with plants and gardening tools"
-                fill
-                className="object-cover rounded-2xl"
-                priority
-              />
+      <section className="relative overflow-hidden flex items-center min-h-[560px] md:min-h-[640px]">
+        {/* Garden background */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/hero-garden.jpg"
+            alt="Lush green garden with plants and gardening tools"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          {/* Readability + garden tint overlays (theme-independent) */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-black/15" />
+          <div className="absolute inset-0 bg-primary/25 mix-blend-multiply" />
+        </div>
+
+        <div className="container relative z-10 mx-auto px-4 py-20 md:py-28">
+          <div className="max-w-2xl space-y-6">
+            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/15 backdrop-blur-sm text-white rounded-full text-sm font-medium ring-1 ring-white/30">
+              <Leaf className="h-4 w-4" />
+              Quality Since 2010
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight text-balance drop-shadow-md">
+              Grow Your Garden with the Right Tools
+            </h1>
+            <p className="text-lg text-white/90 max-w-lg text-pretty drop-shadow">
+              Discover our curated collection of premium gardening tools
+              designed for both professionals and home gardeners. Quality
+              craftsmanship meets modern design.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Button size="lg" asChild>
+                <Link href="/shop">
+                  Shop Now
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                asChild
+                className="bg-white/10 text-white border-white/40 backdrop-blur-sm hover:bg-white/20 hover:text-white"
+              >
+                <Link href="/categories">Browse Categories</Link>
+              </Button>
             </div>
           </div>
         </div>
