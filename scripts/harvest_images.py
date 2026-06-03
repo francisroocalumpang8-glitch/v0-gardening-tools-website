@@ -6,6 +6,7 @@ photo for each gardening category and tool, filters for real JPEG photos, makes
 sure no image is reused, and writes the resulting key->url map to images.json.
 """
 import json
+import re
 import time
 import urllib.error
 import urllib.parse
@@ -18,22 +19,22 @@ UA = "GardenToolsSite/1.0 (local dev image harvest)"
 # can look them up; category keys are the plain slug.
 ITEMS = [
     # --- Category heroes ---
-    ("cat:hand-tools", "garden hand tools"),
+    ("cat:hand-tools", "gardening hand tools trowel"),
     ("cat:power-tools", "hedge trimmer garden"),
     ("cat:watering", "watering can garden"),
     ("cat:planting", "planting seedlings garden"),
-    ("cat:pruning", "pruning shears plant"),
+    ("cat:pruning", "pruning roses secateurs"),
     ("cat:lawn-care", "lawn mower grass"),
 
     # --- Hand Tools ---
     ("hand-tools:Garden Trowel", "garden trowel"),
-    ("hand-tools:Hand Weeder", "garden weeder hand tool"),
+    ("hand-tools:Hand Weeder", "weeding fork tool"),
     ("hand-tools:Garden Fork", "garden digging fork"),
     ("hand-tools:Cultivator Rake", "hand cultivator garden"),
     ("hand-tools:Transplanting Spade", "garden spade"),
-    ("hand-tools:Bulb Planter", "bulb planter tool"),
+    ("hand-tools:Bulb Planter", "bulb planter"),
     ("hand-tools:Garden Hoe", "garden hoe tool"),
-    ("hand-tools:Wooden Dibber", "dibber gardening tool"),
+    ("hand-tools:Wooden Dibber", "garden dibber"),
     ("hand-tools:Soil Scoop", "potting scoop garden"),
     ("hand-tools:Hori Hori Knife", "hori hori knife"),
 
@@ -41,7 +42,7 @@ ITEMS = [
     ("power-tools:Hedge Trimmer", "hedge trimmer"),
     ("power-tools:Lawn Edger", "lawn edger tool"),
     ("power-tools:Leaf Blower", "leaf blower"),
-    ("power-tools:Garden Tiller", "garden tiller cultivator"),
+    ("power-tools:Garden Tiller", "rotary tiller"),
     ("power-tools:Pruning Saw", "pruning saw"),
     ("power-tools:Chainsaw", "chainsaw"),
     ("power-tools:Garden Shredder", "garden chipper shredder"),
@@ -52,54 +53,84 @@ ITEMS = [
     # --- Watering ---
     ("watering:Garden Hose 50ft", "garden hose"),
     ("watering:Spray Nozzle", "garden hose nozzle"),
-    ("watering:Oscillating Sprinkler", "lawn sprinkler"),
+    ("watering:Oscillating Sprinkler", "garden sprinkler watering"),
     ("watering:Drip Irrigation Kit", "drip irrigation"),
     ("watering:Watering Can", "watering can"),
     ("watering:Hose Reel Cart", "garden hose reel"),
     ("watering:Soaker Hose", "soaker hose garden"),
-    ("watering:Water Timer", "irrigation water timer"),
+    ("watering:Water Timer", "hose tap timer"),
     ("watering:Rain Barrel", "rain barrel"),
-    ("watering:Plant Mister", "plant mister spray bottle"),
+    ("watering:Plant Mister", "spray bottle plant"),
 
     # --- Planting ---
     ("planting:Seed Starting Tray", "seedling tray"),
     ("planting:Potting Soil Mix", "potting soil"),
     ("planting:Grow Light", "grow light plant"),
-    ("planting:Plant Labels", "plant label garden"),
+    ("planting:Plant Labels", "plant marker label"),
     ("planting:Seedling Heat Mat", "seed germination tray"),
     ("planting:Compost Bin", "compost bin"),
     ("planting:Raised Bed Kit", "raised garden bed"),
-    ("planting:Plant Support Stakes", "plant stake garden"),
+    ("planting:Plant Support Stakes", "tomato plant support"),
     ("planting:Propagation Pots", "seedling pots"),
-    ("planting:Garden Kneeler", "gardening knee pad"),
+    ("planting:Garden Kneeler", "garden kneeler bench"),
 
     # --- Pruning ---
-    ("pruning:Bypass Pruning Shears", "pruning shears secateurs"),
-    ("pruning:Hedge Shears", "hedge shears"),
+    ("pruning:Bypass Pruning Shears", "secateurs pruning"),
+    ("pruning:Hedge Shears", "hedge shears garden"),
     ("pruning:Lopper", "loppers pruning"),
     ("pruning:Folding Pruning Saw", "folding pruning saw"),
-    ("pruning:Pole Pruner", "pole pruner tree"),
-    ("pruning:Topiary Shears", "topiary shears"),
+    ("pruning:Pole Pruner", "pole pruner"),
+    ("pruning:Topiary Shears", "topiary trimming"),
     ("pruning:Anvil Pruner", "anvil pruner"),
-    ("pruning:Garden Scissors", "garden scissors snips"),
+    ("pruning:Garden Scissors", "harvesting scissors garden"),
     ("pruning:Ratchet Pruner", "garden secateurs"),
-    ("pruning:Pruning Knife", "pruning knife garden"),
+    ("pruning:Pruning Knife", "pruning knife"),
 
     # --- Lawn Care ---
-    ("lawn-care:Reel Mower", "reel lawn mower"),
+    ("lawn-care:Reel Mower", "push reel mower"),
     ("lawn-care:Aerator Shoes", "lawn aerator"),
-    ("lawn-care:Broadcast Spreader", "fertilizer spreader lawn"),
+    ("lawn-care:Broadcast Spreader", "lawn spreader"),
     ("lawn-care:Lawn Roller", "lawn roller"),
-    ("lawn-care:Dethatching Rake", "garden rake lawn"),
-    ("lawn-care:Grass Seed Spreader", "seed spreader lawn"),
-    ("lawn-care:Lawn Sprinkler", "garden sprinkler water"),
-    ("lawn-care:Edging Shears", "lawn edging shears"),
-    ("lawn-care:Leaf Rake", "leaf rake autumn"),
-    ("lawn-care:Lawn Fertilizer", "lawn fertilizer"),
+    ("lawn-care:Dethatching Rake", "garden lawn rake"),
+    ("lawn-care:Grass Seed Spreader", "garden spreader fertilizer"),
+    ("lawn-care:Lawn Sprinkler", "garden lawn sprinkler watering"),
+    ("lawn-care:Edging Shears", "long handle edging shears"),
+    ("lawn-care:Leaf Rake", "leaf rake garden"),
+    ("lawn-care:Lawn Fertilizer", "lawn fertilizer grass"),
 ]
 
+# Titles containing any of these are skipped: paintings, old catalog scans,
+# museum pieces, diagrams, maps, etc. — anything that isn't a clean modern photo.
+BLOCK = [
+    "catalogue", "catalog", "price list", "wholesale", "supplies", "art project",
+    "painting", "drawing", "engraving", "lithograph", "museum", "kremlin",
+    "diagram", "map of", "patent", "logo", "coat of arms", "stamp", "banknote",
+    "annual", "descriptive", "seeds", "seed list", "fire sprinkler", "fire hose",
+    "navy", "looper", "hemlock", "geograph", "redware", "seminary", "wikibooks",
+    "spread eagle", "cemetery", "memorial", "everything for the garden", "dpla",
+    "bamenda", "stihl", "installation", "weingartenschere", "weinweg", "trimbot",
+    "platform", "sculpture", "robot", "autonomous", "icon", ".svg", ".png",
+]
 
-def api_search(query, limit=15, width=1000):
+# Secondary (broader) query tried when the primary returns nothing acceptable.
+SECONDARY = {
+    "hand-tools:Wooden Dibber": "planting seedling hand",
+    "hand-tools:Bulb Planter": "planting flower bulbs soil",
+    "watering:Water Timer": "garden tap faucet",
+    "watering:Plant Mister": "spray bottle",
+    "planting:Plant Support Stakes": "tomato plants garden",
+    "planting:Garden Kneeler": "gardening kneeling soil",
+    "pruning:Garden Scissors": "garden secateurs pruning",
+    "lawn-care:Broadcast Spreader": "lawn care fertilizing grass",
+    "lawn-care:Grass Seed Spreader": "sowing grass seed lawn",
+    "lawn-care:Edging Shears": "garden shears trimming",
+    "lawn-care:Lawn Sprinkler": "water sprinkler lawn grass",
+    "lawn-care:Lawn Fertilizer": "fertilizer granules garden",
+    "cat:hand-tools": "garden trowel gloves soil",
+}
+
+
+def api_search(query, limit=40, width=1000):
     params = {
         "action": "query",
         "generator": "search",
@@ -148,8 +179,21 @@ def candidates(data):
     return out
 
 
+def blocked(c):
+    t = c["title"].lower()
+    if any(b in t for b in BLOCK):
+        return True
+    # Any pre-1990 year in the title is a strong "archival scan" signal.
+    for y in re.findall(r"\b(1[5-9]\d\d)\b", t):
+        if int(y) < 1990:
+            return True
+    return False
+
+
 def good(c, min_w=800, ar=(0.45, 2.4)):
     if c["mime"] != "image/jpeg" or not c["thumb"]:
+        return False
+    if blocked(c):
         return False
     if c["w"] < min_w or c["h"] == 0:
         return False
@@ -166,11 +210,11 @@ def pick(query, used):
             continue
         if good(c):
             return c
-    # Relax: allow smaller / wider, still jpeg.
+    # Relax: allow smaller / wider, still a non-blocked jpeg.
     for c in cands:
         if c["thumb"] in used:
             continue
-        if c["mime"] == "image/jpeg" and c["thumb"] and c["w"] >= 500:
+        if c["mime"] == "image/jpeg" and c["thumb"] and c["w"] >= 500 and not blocked(c):
             return c
     return None
 
@@ -190,6 +234,9 @@ def main():
             continue
         try:
             c = pick(query, used)
+            if not c and key in SECONDARY:
+                time.sleep(1.2)
+                c = pick(SECONDARY[key], used)
         except Exception as e:  # noqa: BLE001
             c = None
             print(f"ERR  {key!r} ({query!r}): {e}")

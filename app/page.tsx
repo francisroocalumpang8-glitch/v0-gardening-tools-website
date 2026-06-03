@@ -4,6 +4,7 @@ import { ArrowRight, Truck, Shield, Leaf, Star, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { products, categories } from "@/lib/products";
+import { categoryImages } from "@/lib/product-images";
 
 export default function HomePage() {
   const featuredProducts = products.filter((p) => p.badge).slice(0, 4);
@@ -146,19 +147,7 @@ export default function HomePage() {
                 className="group relative overflow-hidden rounded-xl aspect-[4/3] bg-muted"
               >
                 <Image
-                  src={`https://images.unsplash.com/photo-${
-                    category.slug === "hand-tools"
-                      ? "1416879595882-3373a0480b5b"
-                      : category.slug === "power-tools"
-                      ? "1558618666-fcd25c85cd64"
-                      : category.slug === "watering"
-                      ? "1585320806297-9794b3e4eeae"
-                      : category.slug === "planting"
-                      ? "1466692476868-aef1dfb1e735"
-                      : category.slug === "pruning"
-                      ? "1591857177580-dc82b9ac4e1e"
-                      : "1592150621744-aca64f48394a"
-                  }?w=600&h=400&fit=crop`}
+                  src={categoryImages[category.slug] ?? "/placeholder.jpg"}
                   alt={category.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"

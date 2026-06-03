@@ -101,27 +101,29 @@ export default function ContactPage() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero */}
-      <section className="bg-primary/5 py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-left">
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                Get in Touch
-              </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-                Have a question about our products or need gardening advice? We&apos;re
-                here to help. Reach out and our team will get back to you shortly.
-              </p>
-            </div>
-            <div className="relative aspect-video lg:aspect-[4/3] rounded-2xl overflow-hidden">
-              <Image
-                src="/images/contact-store.jpg"
-                alt="Roro Gardening Tools Store"
-                fill
-                className="object-cover"
-              />
-            </div>
+      {/* Hero banner */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/contact-store.jpg"
+            alt="Roro Gardening Tools Store"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
+          <div className="absolute inset-0 bg-primary/20 mix-blend-multiply" />
+        </div>
+        <div className="container relative z-10 mx-auto px-4 py-20 md:py-28">
+          <div className="max-w-2xl">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-md">
+              Get in Touch
+            </h1>
+            <p className="text-lg text-white/90 drop-shadow">
+              Have a question about our products or need gardening advice? We&apos;re
+              here to help. Reach out and our team will get back to you shortly.
+            </p>
           </div>
         </div>
       </section>

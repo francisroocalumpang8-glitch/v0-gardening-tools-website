@@ -1,3 +1,5 @@
+import { categoryImages, toolImages } from "./product-images";
+
 export interface Product {
   id: number;
   name: string;
@@ -153,9 +155,9 @@ function seeded(n: number): number {
   return x - Math.floor(x);
 }
 
-function imageFor(keywords: string, id: number): string {
-  // LoremFlickr serves a keyword-matched photo; `lock` keeps it stable per id.
-  return `https://loremflickr.com/600/600/${keywords}?lock=${id}`;
+function imageFor(slug: string, baseName: string): string {
+  // Curated HD photo for this exact tool, else the category photo as fallback.
+  return toolImages[`${slug}:${baseName}`] ?? categoryImages[slug] ?? "/placeholder.jpg";
 }
 
 function badgeFor(id: number): string | undefined {
@@ -185,7 +187,7 @@ function buildProducts(): Product[] {
           price: Number(price.toFixed(2)),
           category: cat.slug,
           description: item.description,
-          image: imageFor(item.keywords, id),
+          image: imageFor(cat.slug, item.name),
           rating,
           reviews,
           inStock,

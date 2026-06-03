@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, Suspense } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
@@ -189,15 +190,27 @@ function ShopContent() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Shop All Products
-        </h1>
-        <p className="text-muted-foreground">
-          Browse our complete collection of {products.length} premium gardening
-          tools
-        </p>
+      {/* Header banner */}
+      <div className="relative overflow-hidden rounded-2xl mb-8">
+        <Image
+          src="/images/tools-display.jpg"
+          alt="Premium gardening tools"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-black/30" />
+        <div className="absolute inset-0 bg-primary/20 mix-blend-multiply" />
+        <div className="relative z-10 px-6 py-14 md:px-10 md:py-20">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 drop-shadow">
+            Shop All Products
+          </h1>
+          <p className="text-white/90 drop-shadow">
+            Browse our complete collection of {products.length} premium gardening
+            tools
+          </p>
+        </div>
       </div>
 
       {/* Filters Bar */}

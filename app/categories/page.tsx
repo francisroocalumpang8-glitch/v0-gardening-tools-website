@@ -2,19 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { categories, products } from "@/lib/products";
+import { categoryImages } from "@/lib/product-images";
 
 export default function CategoriesPage() {
-  const getCategoryImage = (slug: string) => {
-    const images: Record<string, string> = {
-      "hand-tools": "1416879595882-3373a0480b5b",
-      "power-tools": "1558618666-fcd25c85cd64",
-      watering: "1585320806297-9794b3e4eeae",
-      planting: "1466692476868-aef1dfb1e735",
-      pruning: "1591857177580-dc82b9ac4e1e",
-      "lawn-care": "1592150621744-aca64f48394a",
-    };
-    return `https://images.unsplash.com/photo-${images[slug]}?w=800&h=600&fit=crop`;
-  };
+  const getCategoryImage = (slug: string) =>
+    categoryImages[slug] ?? "/placeholder.jpg";
 
   const getCategoryDescription = (slug: string) => {
     const descriptions: Record<string, string> = {
@@ -36,15 +28,27 @@ export default function CategoriesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-foreground mb-4">
-          Shop by Category
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Browse our carefully curated categories to find exactly what you need
-          for your garden
-        </p>
+      {/* Header banner */}
+      <div className="relative overflow-hidden rounded-2xl mb-12">
+        <Image
+          src="/images/hero-garden.jpg"
+          alt="Lush garden"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/40" />
+        <div className="absolute inset-0 bg-primary/20 mix-blend-multiply" />
+        <div className="relative z-10 px-6 py-16 md:py-24 text-center">
+          <h1 className="text-4xl font-bold text-white mb-4 drop-shadow-md">
+            Shop by Category
+          </h1>
+          <p className="text-lg text-white/90 max-w-2xl mx-auto drop-shadow">
+            Browse our carefully curated categories to find exactly what you need
+            for your garden
+          </p>
+        </div>
       </div>
 
       {/* Categories Grid */}

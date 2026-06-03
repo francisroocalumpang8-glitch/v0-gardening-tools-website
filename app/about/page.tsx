@@ -45,38 +45,40 @@ export default function AboutPage() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero */}
-      <section className="relative bg-primary/5 py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
-                Our Story
-              </span>
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 text-balance">
-                Growing Gardens, Growing Communities
-              </h1>
-              <p className="text-lg text-muted-foreground mb-6">
-                Founded in 2010, Roro Gardening Tools started with a simple
-                mission: to provide gardeners with the best tools to nurture
-                their green spaces. What began as a small family workshop has
-                grown into a trusted name in gardening equipment.
-              </p>
-              <p className="text-muted-foreground">
-                Today, we serve over 50,000 customers worldwide, from hobbyist
-                gardeners to professional landscapers. Our commitment to
-                quality, sustainability, and customer satisfaction remains at
-                the heart of everything we do.
-              </p>
-            </div>
-            <div className="relative aspect-square lg:aspect-auto lg:h-[500px]">
-              <Image
-                src="/images/about-garden.jpg"
-                alt="Beautiful garden with plants"
-                fill
-                className="object-cover rounded-2xl"
-              />
-            </div>
+      {/* Hero banner */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/about-garden.jpg"
+            alt="Beautiful garden with plants"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/25" />
+          <div className="absolute inset-0 bg-primary/20 mix-blend-multiply" />
+        </div>
+        <div className="container relative z-10 mx-auto px-4 py-20 md:py-28">
+          <div className="max-w-2xl space-y-6">
+            <span className="inline-block px-4 py-1.5 bg-white/15 backdrop-blur-sm text-white ring-1 ring-white/30 rounded-full text-sm font-medium">
+              Our Story
+            </span>
+            <h1 className="text-4xl md:text-5xl font-bold text-white text-balance drop-shadow-md">
+              Growing Gardens, Growing Communities
+            </h1>
+            <p className="text-lg text-white/90 drop-shadow">
+              Founded in 2010, Roro Gardening Tools started with a simple
+              mission: to provide gardeners with the best tools to nurture
+              their green spaces. What began as a small family workshop has
+              grown into a trusted name in gardening equipment.
+            </p>
+            <p className="text-white/80 drop-shadow">
+              Today, we serve over 50,000 customers worldwide, from hobbyist
+              gardeners to professional landscapers. Our commitment to
+              quality, sustainability, and customer satisfaction remains at
+              the heart of everything we do.
+            </p>
           </div>
         </div>
       </section>
